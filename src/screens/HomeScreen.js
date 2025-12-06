@@ -1,10 +1,47 @@
-import { useState } from 'react';
-import { ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { useEffect, useState } from 'react';
+import { Alert, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 
 export default function HomeScreen() {
   const [selectedCategory, setSelectedCategory] = useState('Kodlama');
   
+  const INITIAL_TIME = 25 * 60; 
+  const [timeLeft, setTimeLeft] = useState(INITIAL_TIME);
+  const [isActive, setIsActive] = useState(false);
+
   const categories = ['Kodlama', 'Ders', 'Kitap', 'Proje', 'Spor'];
+
+  useEffect(() => {
+    let interval = null;
+
+    if (isActive && timeLeft > 0) {
+      interval = setInterval(() => {
+        setTimeLeft((prevTime) => prevTime - 1);
+      }, 1000);
+    } else if (timeLeft === 0) {
+      // Süre bittiğinde durdur
+      setIsActive(false);
+      Alert.alert("Tebrikler!", "Odaklanma seansı tamamlandı.");
+    } else {
+      clearInterval(interval);
+    }
+
+    return () => clearInterval(interval);
+  }, [isActive, timeLeft]);
+
+  const formatTime = (seconds) => {
+    const minutes = Math.floor(seconds / 60);
+    const remainingSeconds = seconds % 60;
+    return `${minutes < 10 ? '0' : ''}${minutes}:${remainingSeconds < 10 ? '0' : ''}${remainingSeconds}`;
+  };
+
+  const handleStartStop = () => {
+    setIsActive(!isActive); 
+  };
+
+  const handleReset = () => {
+    setIsActive(false);
+    setTimeLeft(INITIAL_TIME);
+  };
 
   return (
     <View style={styles.container}>
@@ -12,8 +49,10 @@ export default function HomeScreen() {
       <Text style={styles.title}>Odaklanma Zamanı</Text>
 
       <View style={styles.timerContainer}>
-        <Text style={styles.timerText}>25:00</Text>
-        <Text style={styles.statusText}>Hazır mısın?</Text>
+        <Text style={styles.timerText}>{formatTime(timeLeft)}</Text>
+        <Text style={styles.statusText}>
+          {isActive ? 'Odaklanılıyor...' : 'Hazır'}
+        </Text>
       </View>
 
       <View style={styles.categoryContainer}>
@@ -26,7 +65,7 @@ export default function HomeScreen() {
                 styles.categoryButton, 
                 selectedCategory === cat && styles.categoryButtonSelected
               ]}
-              onPress={() => setSelectedCategory(cat)}
+              onPress={() => !isActive && setSelectedCategory(cat)} // Sayaç çalışırken kategori değişmesin
             >
               <Text style={[
                 styles.categoryText, 
@@ -40,11 +79,13 @@ export default function HomeScreen() {
       </View>
 
       <View style={styles.controlsContainer}>
-        <TouchableOpacity style={styles.mainButton}>
-          <Text style={styles.mainButtonText}>BAŞLAT</Text>
+        <TouchableOpacity style={styles.mainButton} onPress={handleStartStop}>
+          <Text style={styles.mainButtonText}>
+            {isActive ? 'DURAKLAT' : 'BAŞLAT'}
+          </Text>
         </TouchableOpacity>
 
-        <TouchableOpacity style={styles.resetButton}>
+        <TouchableOpacity style={styles.resetButton} onPress={handleReset}>
           <Text style={styles.resetButtonText}>SIFIRLA</Text>
         </TouchableOpacity>
       </View>
@@ -53,7 +94,6 @@ export default function HomeScreen() {
   );
 }
 
-// --- TASARIM (STILLER) ---
 const styles = StyleSheet.create({
   container: {
     flex: 1,
@@ -138,6 +178,8 @@ const styles = StyleSheet.create({
     paddingVertical: 15,
     paddingHorizontal: 40,
     borderRadius: 30,
+    minWidth: 150,
+    alignItems: 'center',
   },
   mainButtonText: {
     color: '#fff',
