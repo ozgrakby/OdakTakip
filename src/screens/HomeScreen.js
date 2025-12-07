@@ -1,32 +1,52 @@
-import { useEffect, useState } from 'react';
-import { Alert, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { useEffect, useRef, useState } from 'react';
+import { Alert, AppState, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 
 export default function HomeScreen() {
   const [selectedCategory, setSelectedCategory] = useState('Kodlama');
-  
   const INITIAL_TIME = 25 * 60; 
   const [timeLeft, setTimeLeft] = useState(INITIAL_TIME);
   const [isActive, setIsActive] = useState(false);
+  
+  const [distractionCount, setDistractionCount] = useState(0);
+  
+  const appState = useRef(AppState.currentState);
 
   const categories = ['Kodlama', 'Ders', 'Kitap', 'Proje', 'Spor'];
 
   useEffect(() => {
     let interval = null;
-
     if (isActive && timeLeft > 0) {
       interval = setInterval(() => {
         setTimeLeft((prevTime) => prevTime - 1);
       }, 1000);
     } else if (timeLeft === 0) {
-      // Süre bittiğinde durdur
       setIsActive(false);
       Alert.alert("Tebrikler!", "Odaklanma seansı tamamlandı.");
     } else {
       clearInterval(interval);
     }
-
     return () => clearInterval(interval);
   }, [isActive, timeLeft]);
+
+  useEffect(() => {
+    const subscription = AppState.addEventListener('change', nextAppState => {
+      
+      if (nextAppState.match(/inactive|background/)) {
+        
+        if (isActive) {
+          setIsActive(false);
+          setDistractionCount(prev => prev + 1);
+          Alert.alert("Dikkat!", "Odaktan koptunuz. Sayaç duraklatıldı.");
+        }
+      }
+
+      appState.current = nextAppState;
+    });
+
+    return () => {
+      subscription.remove();
+    };
+  }, [isActive]);
 
   const formatTime = (seconds) => {
     const minutes = Math.floor(seconds / 60);
@@ -35,12 +55,13 @@ export default function HomeScreen() {
   };
 
   const handleStartStop = () => {
-    setIsActive(!isActive); 
+    setIsActive(!isActive);
   };
 
   const handleReset = () => {
     setIsActive(false);
     setTimeLeft(INITIAL_TIME);
+    setDistractionCount(0);
   };
 
   return (
@@ -55,6 +76,11 @@ export default function HomeScreen() {
         </Text>
       </View>
 
+      <View style={styles.statsContainer}>
+        <Text style={styles.statsTitle}>Dikkat Dağınıklığı:</Text>
+        <Text style={styles.statsCount}>{distractionCount}</Text>
+      </View>
+
       <View style={styles.categoryContainer}>
         <Text style={styles.sectionTitle}>Kategori Seç:</Text>
         <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.scrollContainer}>
@@ -65,7 +91,7 @@ export default function HomeScreen() {
                 styles.categoryButton, 
                 selectedCategory === cat && styles.categoryButtonSelected
               ]}
-              onPress={() => !isActive && setSelectedCategory(cat)} // Sayaç çalışırken kategori değişmesin
+              onPress={() => !isActive && setSelectedCategory(cat)}
             >
               <Text style={[
                 styles.categoryText, 
@@ -106,7 +132,7 @@ const styles = StyleSheet.create({
     fontSize: 24,
     fontWeight: 'bold',
     color: '#333',
-    marginBottom: 30,
+    marginBottom: 20,
   },
   timerContainer: {
     backgroundColor: '#fff',
@@ -117,7 +143,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     borderWidth: 5,
     borderColor: '#4A90E2',
-    marginBottom: 40,
+    marginBottom: 20,
     elevation: 5,
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 2 },
@@ -133,6 +159,24 @@ const styles = StyleSheet.create({
     fontSize: 16,
     color: '#888',
     marginTop: 10,
+  },
+  statsContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginBottom: 30,
+    backgroundColor: '#FFE0B2', 
+    padding: 10,
+    borderRadius: 10,
+  },
+  statsTitle: {
+    fontSize: 16,
+    color: '#E65100',
+    marginRight: 10,
+  },
+  statsCount: {
+    fontSize: 18,
+    fontWeight: 'bold',
+    color: '#E65100',
   },
   categoryContainer: {
     width: '100%',
