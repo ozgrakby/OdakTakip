@@ -1,18 +1,46 @@
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useEffect, useRef, useState } from 'react';
 import { Alert, AppState, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 
 export default function HomeScreen() {
   const [selectedCategory, setSelectedCategory] = useState('Kodlama');
-  const INITIAL_TIME = 25 * 60; 
+  
+  const INITIAL_TIME = 5; 
+  
   const [timeLeft, setTimeLeft] = useState(INITIAL_TIME);
   const [isActive, setIsActive] = useState(false);
-  
   const [distractionCount, setDistractionCount] = useState(0);
   
   const appState = useRef(AppState.currentState);
-
   const categories = ['Kodlama', 'Ders', 'Kitap', 'Proje', 'Spor'];
 
+  const saveSession = async () => {
+    try {
+      const newSession = {
+        id: Date.now(),
+        date: new Date().toISOString(),
+        category: selectedCategory,
+        duration: 25,
+        distractions: distractionCount,
+      };
+
+      const existingData = await AsyncStorage.getItem('focus_sessions');
+      let sessions = existingData ? JSON.parse(existingData) : [];
+
+      sessions.push(newSession);
+
+      await AsyncStorage.setItem('focus_sessions', JSON.stringify(sessions));
+      
+      console.log("Kayıt Başarılı:", newSession);
+      Alert.alert("Harika!", "Seans başarıyla kaydedildi.");
+
+    } catch (error) {
+      console.log("Kayıt Hatası:", error);
+      Alert.alert("Hata", "Veri kaydedilemedi.");
+    }
+  };
+  
+  // Sayaç Mantığı
   useEffect(() => {
     let interval = null;
     if (isActive && timeLeft > 0) {
@@ -21,7 +49,9 @@ export default function HomeScreen() {
       }, 1000);
     } else if (timeLeft === 0) {
       setIsActive(false);
-      Alert.alert("Tebrikler!", "Odaklanma seansı tamamlandı.");
+      saveSession();
+      setTimeLeft(INITIAL_TIME);
+      setDistractionCount(0);
     } else {
       clearInterval(interval);
     }
@@ -30,16 +60,13 @@ export default function HomeScreen() {
 
   useEffect(() => {
     const subscription = AppState.addEventListener('change', nextAppState => {
-      
       if (nextAppState.match(/inactive|background/)) {
-        
         if (isActive) {
           setIsActive(false);
           setDistractionCount(prev => prev + 1);
           Alert.alert("Dikkat!", "Odaktan koptunuz. Sayaç duraklatıldı.");
         }
       }
-
       appState.current = nextAppState;
     });
 
@@ -64,9 +91,9 @@ export default function HomeScreen() {
     setDistractionCount(0);
   };
 
+  // --- GÖRÜNÜM (UI) ---
   return (
     <View style={styles.container}>
-      
       <Text style={styles.title}>Odaklanma Zamanı</Text>
 
       <View style={styles.timerContainer}>
@@ -115,128 +142,29 @@ export default function HomeScreen() {
           <Text style={styles.resetButtonText}>SIFIRLA</Text>
         </TouchableOpacity>
       </View>
-
     </View>
   );
 }
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#F5F7FA',
-    alignItems: 'center',
-    paddingTop: 60,
-    paddingHorizontal: 20,
-  },
-  title: {
-    fontSize: 24,
-    fontWeight: 'bold',
-    color: '#333',
-    marginBottom: 20,
-  },
-  timerContainer: {
-    backgroundColor: '#fff',
-    width: 250,
-    height: 250,
-    borderRadius: 125,
-    justifyContent: 'center',
-    alignItems: 'center',
-    borderWidth: 5,
-    borderColor: '#4A90E2',
-    marginBottom: 20,
-    elevation: 5,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.2,
-    shadowRadius: 4,
-  },
-  timerText: {
-    fontSize: 60,
-    fontWeight: 'bold',
-    color: '#4A90E2',
-  },
-  statusText: {
-    fontSize: 16,
-    color: '#888',
-    marginTop: 10,
-  },
-  statsContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    marginBottom: 30,
-    backgroundColor: '#FFE0B2', 
-    padding: 10,
-    borderRadius: 10,
-  },
-  statsTitle: {
-    fontSize: 16,
-    color: '#E65100',
-    marginRight: 10,
-  },
-  statsCount: {
-    fontSize: 18,
-    fontWeight: 'bold',
-    color: '#E65100',
-  },
-  categoryContainer: {
-    width: '100%',
-    marginBottom: 30,
-  },
-  sectionTitle: {
-    fontSize: 16,
-    fontWeight: '600',
-    marginBottom: 10,
-    color: '#555',
-  },
-  scrollContainer: {
-    flexDirection: 'row',
-  },
-  categoryButton: {
-    paddingVertical: 10,
-    paddingHorizontal: 20,
-    backgroundColor: '#fff',
-    borderRadius: 20,
-    marginRight: 10,
-    borderWidth: 1,
-    borderColor: '#ddd',
-  },
-  categoryButtonSelected: {
-    backgroundColor: '#4A90E2',
-    borderColor: '#4A90E2',
-  },
-  categoryText: {
-    color: '#555',
-  },
-  categoryTextSelected: {
-    color: '#fff',
-    fontWeight: 'bold',
-  },
-  controlsContainer: {
-    flexDirection: 'row',
-    width: '100%',
-    justifyContent: 'space-around',
-    alignItems: 'center',
-  },
-  mainButton: {
-    backgroundColor: '#4A90E2',
-    paddingVertical: 15,
-    paddingHorizontal: 40,
-    borderRadius: 30,
-    minWidth: 150,
-    alignItems: 'center',
-  },
-  mainButtonText: {
-    color: '#fff',
-    fontSize: 18,
-    fontWeight: 'bold',
-  },
-  resetButton: {
-    paddingVertical: 15,
-    paddingHorizontal: 20,
-  },
-  resetButtonText: {
-    color: '#E74C3C',
-    fontSize: 16,
-    fontWeight: 'bold',
-  },
+  container: { flex: 1, backgroundColor: '#F5F7FA', alignItems: 'center', paddingTop: 60, paddingHorizontal: 20 },
+  title: { fontSize: 24, fontWeight: 'bold', color: '#333', marginBottom: 20 },
+  timerContainer: { backgroundColor: '#fff', width: 250, height: 250, borderRadius: 125, justifyContent: 'center', alignItems: 'center', borderWidth: 5, borderColor: '#4A90E2', marginBottom: 20, elevation: 5, shadowColor: '#000', shadowOffset: { width: 0, height: 2 }, shadowOpacity: 0.2, shadowRadius: 4 },
+  timerText: { fontSize: 60, fontWeight: 'bold', color: '#4A90E2' },
+  statusText: { fontSize: 16, color: '#888', marginTop: 10 },
+  statsContainer: { flexDirection: 'row', alignItems: 'center', marginBottom: 30, backgroundColor: '#FFE0B2', padding: 10, borderRadius: 10 },
+  statsTitle: { fontSize: 16, color: '#E65100', marginRight: 10 },
+  statsCount: { fontSize: 18, fontWeight: 'bold', color: '#E65100' },
+  categoryContainer: { width: '100%', marginBottom: 30 },
+  sectionTitle: { fontSize: 16, fontWeight: '600', marginBottom: 10, color: '#555' },
+  scrollContainer: { flexDirection: 'row' },
+  categoryButton: { paddingVertical: 10, paddingHorizontal: 20, backgroundColor: '#fff', borderRadius: 20, marginRight: 10, borderWidth: 1, borderColor: '#ddd' },
+  categoryButtonSelected: { backgroundColor: '#4A90E2', borderColor: '#4A90E2' },
+  categoryText: { color: '#555' },
+  categoryTextSelected: { color: '#fff', fontWeight: 'bold' },
+  controlsContainer: { flexDirection: 'row', width: '100%', justifyContent: 'space-around', alignItems: 'center' },
+  mainButton: { backgroundColor: '#4A90E2', paddingVertical: 15, paddingHorizontal: 40, borderRadius: 30, minWidth: 150, alignItems: 'center' },
+  mainButtonText: { color: '#fff', fontSize: 18, fontWeight: 'bold' },
+  resetButton: { paddingVertical: 15, paddingHorizontal: 20 },
+  resetButtonText: { color: '#E74C3C', fontSize: 16, fontWeight: 'bold' },
 });
