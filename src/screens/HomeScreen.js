@@ -5,7 +5,7 @@ import { Alert, AppState, ScrollView, StyleSheet, Text, TouchableOpacity, View }
 export default function HomeScreen() {
   const [selectedCategory, setSelectedCategory] = useState('Kodlama');
   
-  const INITIAL_TIME = 5; 
+  const INITIAL_TIME = 25 * 60; 
   
   const [timeLeft, setTimeLeft] = useState(INITIAL_TIME);
   const [isActive, setIsActive] = useState(false);
