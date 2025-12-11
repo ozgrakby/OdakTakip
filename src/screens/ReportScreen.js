@@ -11,7 +11,8 @@ export default function ReportScreen() {
     todayTime: 0,
     totalTime: 0,
     totalDistractions: 0,
-    sessionCount: 0
+    sessionCount: 0,
+    averageTime: 0
   });
 
   const [pieData, setPieData] = useState([]);
@@ -40,19 +41,23 @@ export default function ReportScreen() {
     const todayStr = new Date().toISOString().split('T')[0];
 
     sessions.forEach(session => {
-      allTimeTotal += session.duration;
+      allTimeTotal += session.duration; 
       totalDistractions += session.distractions;
+      
       const sessionDateStr = session.date.split('T')[0];
       if (sessionDateStr === todayStr) {
         todayTotal += session.duration;
       }
     });
 
+    const avgTime = sessions.length > 0 ? Math.round(allTimeTotal / sessions.length) : 0;
+
     setStats({
       todayTime: todayTotal,
       totalTime: allTimeTotal,
       totalDistractions: totalDistractions,
-      sessionCount: sessions.length
+      sessionCount: sessions.length,
+      averageTime: avgTime
     });
   };
 
@@ -66,7 +71,7 @@ export default function ReportScreen() {
       }
     });
 
-    const colors = ['#E57373', '#64B5F6', '#81C784', '#FFD54F', '#BA68C8'];
+    const colors = ['#E57373', '#64B5F6', '#81C784', '#FFD54F', '#BA68C8', '#90A4AE'];
     
     const pData = Object.keys(categoryMap).map((cat, index) => ({
       name: cat,
@@ -84,8 +89,8 @@ export default function ReportScreen() {
     for (let i = 6; i >= 0; i--) {
       const d = new Date();
       d.setDate(d.getDate() - i);
-      const dayStr = d.toISOString().split('T')[0]; 
-      const dayLabel = `${d.getDate()}/${d.getMonth() + 1}`; 
+      const dayStr = d.toISOString().split('T')[0];
+      const dayLabel = `${d.getDate()}/${d.getMonth() + 1}`;
       
       last7Days.push(dayLabel);
 
@@ -110,19 +115,40 @@ export default function ReportScreen() {
 
   return (
     <ScrollView style={styles.container}>
-      <Text style={styles.headerTitle}>İstatistikler & Raporlar</Text>
+      <Text style={styles.headerTitle}>Raporlar</Text>
 
       <View style={styles.statsGrid}>
+        
         <View style={[styles.card, { backgroundColor: '#E3F2FD' }]}>
           <Text style={styles.cardTitle}>Bugün</Text>
           <Text style={[styles.cardValue, { color: '#1E88E5' }]}>{stats.todayTime} dk</Text>
         </View>
+
         <View style={[styles.card, { backgroundColor: '#E8F5E9' }]}>
           <Text style={styles.cardTitle}>Toplam</Text>
           <Text style={[styles.cardValue, { color: '#43A047' }]}>{stats.totalTime} dk</Text>
         </View>
+
+        <View style={[styles.card, { backgroundColor: '#FFF3E0' }]}>
+          <Text style={styles.cardTitle}>Seans Sayısı</Text>
+          <Text style={[styles.cardValue, { color: '#FB8C00' }]}>{stats.sessionCount}</Text>
+        </View>
+
+        <View style={[styles.card, { backgroundColor: '#FFEBEE' }]}>
+          <Text style={styles.cardTitle}>Dikkat Dağılması</Text>
+          <Text style={[styles.cardValue, { color: '#E53935' }]}>{stats.totalDistractions}</Text>
+        </View>
+
+        <View style={[styles.cardFull, { backgroundColor: '#F3E5F5' }]}>
+          <Text style={styles.cardTitle}>Ortalama Seans Süresi</Text>
+          <Text style={[styles.cardValue, { color: '#8E24AA' }]}>
+            {stats.averageTime} dk
+          </Text>
+        </View>
+
       </View>
 
+      
       <Text style={styles.chartTitle}>Kategori Dağılımı</Text>
       {pieData.length > 0 ? (
         <PieChart
@@ -168,10 +194,16 @@ const chartConfig = {
 const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: '#fff', padding: 20, paddingTop: 50 },
   headerTitle: { fontSize: 28, fontWeight: 'bold', color: '#333', marginBottom: 20 },
-  statsGrid: { flexDirection: 'row', justifyContent: 'space-between', marginBottom: 30 },
-  card: { width: '48%', padding: 20, borderRadius: 15, alignItems: 'center', elevation: 3 },
-  cardTitle: { fontSize: 14, color: '#555', marginBottom: 5 },
-  cardValue: { fontSize: 24, fontWeight: 'bold' },
+  
+  statsGrid: { flexDirection: 'row', flexWrap: 'wrap', justifyContent: 'space-between', marginBottom: 20 },
+  
+  card: { width: '48%', padding: 15, borderRadius: 15, alignItems: 'center', marginBottom: 15, elevation: 2 },
+  
+  cardFull: { width: '100%', padding: 15, borderRadius: 15, alignItems: 'center', marginBottom: 15, elevation: 2 },
+  
+  cardTitle: { fontSize: 14, color: '#555', marginBottom: 5, fontWeight: '600' },
+  cardValue: { fontSize: 22, fontWeight: 'bold' },
+  
   chartTitle: { fontSize: 18, fontWeight: 'bold', color: '#333', marginTop: 10, marginBottom: 10 },
   chartStyle: { borderRadius: 16, marginVertical: 8 },
   noDataText: { textAlign: 'center', color: '#999', marginVertical: 20 }
