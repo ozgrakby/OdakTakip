@@ -1,10 +1,10 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useFocusEffect } from '@react-navigation/native';
 import { useCallback, useState } from 'react';
-import { Dimensions, ScrollView, StyleSheet, Text, View } from 'react-native';
-import { BarChart, PieChart } from 'react-native-chart-kit';
+import { ScrollView, StyleSheet, Text, View } from 'react-native';
 
-const screenWidth = Dimensions.get('window').width;
+import ChartsSection from '../components/ChartsSection';
+import StatCard from '../components/StatCard';
 
 export default function ReportScreen() {
   const [stats, setStats] = useState({
@@ -25,10 +25,8 @@ export default function ReportScreen() {
     try {
       const jsonValue = await AsyncStorage.getItem('focus_sessions');
       const sessions = jsonValue != null ? JSON.parse(jsonValue) : [];
-
       processStats(sessions);
       processCharts(sessions);
-
     } catch (e) {
       console.error("Veri okuma hatası:", e);
     }
@@ -64,15 +62,11 @@ export default function ReportScreen() {
   const processCharts = (sessions) => {
     const categoryMap = {};
     sessions.forEach(s => {
-      if (categoryMap[s.category]) {
-        categoryMap[s.category] += s.duration;
-      } else {
-        categoryMap[s.category] = s.duration;
-      }
+      if (categoryMap[s.category]) categoryMap[s.category] += s.duration;
+      else categoryMap[s.category] = s.duration;
     });
 
     const colors = ['#E57373', '#64B5F6', '#81C784', '#FFD54F', '#BA68C8', '#90A4AE'];
-    
     const pData = Object.keys(categoryMap).map((cat, index) => ({
       name: cat,
       population: categoryMap[cat],
@@ -82,10 +76,8 @@ export default function ReportScreen() {
     }));
     setPieData(pData);
 
-
     const last7Days = [];
     const last7DaysData = [];
-    
     for (let i = 6; i >= 0; i--) {
       const d = new Date();
       d.setDate(d.getDate() - i);
@@ -93,11 +85,9 @@ export default function ReportScreen() {
       const dayLabel = `${d.getDate()}/${d.getMonth() + 1}`;
       
       last7Days.push(dayLabel);
-
       const totalForDay = sessions
         .filter(s => s.date.startsWith(dayStr))
         .reduce((sum, current) => sum + current.duration, 0);
-      
       last7DaysData.push(totalForDay);
     }
 
@@ -108,9 +98,7 @@ export default function ReportScreen() {
   };
 
   useFocusEffect(
-    useCallback(() => {
-      loadData();
-    }, [])
+    useCallback(() => { loadData(); }, [])
   );
 
   return (
@@ -118,93 +106,22 @@ export default function ReportScreen() {
       <Text style={styles.headerTitle}>Raporlar</Text>
 
       <View style={styles.statsGrid}>
-        
-        <View style={[styles.card, { backgroundColor: '#E3F2FD' }]}>
-          <Text style={styles.cardTitle}>Bugün</Text>
-          <Text style={[styles.cardValue, { color: '#1E88E5' }]}>{stats.todayTime} dk</Text>
-        </View>
-
-        <View style={[styles.card, { backgroundColor: '#E8F5E9' }]}>
-          <Text style={styles.cardTitle}>Toplam</Text>
-          <Text style={[styles.cardValue, { color: '#43A047' }]}>{stats.totalTime} dk</Text>
-        </View>
-
-        <View style={[styles.card, { backgroundColor: '#FFF3E0' }]}>
-          <Text style={styles.cardTitle}>Seans Sayısı</Text>
-          <Text style={[styles.cardValue, { color: '#FB8C00' }]}>{stats.sessionCount}</Text>
-        </View>
-
-        <View style={[styles.card, { backgroundColor: '#FFEBEE' }]}>
-          <Text style={styles.cardTitle}>Dikkat Dağılması</Text>
-          <Text style={[styles.cardValue, { color: '#E53935' }]}>{stats.totalDistractions}</Text>
-        </View>
-
-        <View style={[styles.cardFull, { backgroundColor: '#F3E5F5' }]}>
-          <Text style={styles.cardTitle}>Ortalama Seans Süresi</Text>
-          <Text style={[styles.cardValue, { color: '#8E24AA' }]}>
-            {stats.averageTime} dk
-          </Text>
-        </View>
-
+        <StatCard title="Bugün" value={`${stats.todayTime} dk`} color="#1E88E5" backgroundColor="#E3F2FD" />
+        <StatCard title="Toplam" value={`${stats.totalTime} dk`} color="#43A047" backgroundColor="#E8F5E9" />
+        <StatCard title="Seans Sayısı" value={stats.sessionCount} color="#FB8C00" backgroundColor="#FFF3E0" />
+        <StatCard title="Dikkat Dağılması" value={stats.totalDistractions} color="#E53935" backgroundColor="#FFEBEE" />
+        <StatCard title="Ortalama Süre" value={`${stats.averageTime} dk`} color="#8E24AA" backgroundColor="#F3E5F5" isFullWidth={true} />
       </View>
 
-      
-      <Text style={styles.chartTitle}>Kategori Dağılımı</Text>
-      {pieData.length > 0 ? (
-        <PieChart
-          data={pieData}
-          width={screenWidth - 40}
-          height={220}
-          chartConfig={chartConfig}
-          accessor={"population"}
-          backgroundColor={"transparent"}
-          paddingLeft={"15"}
-          absolute
-        />
-      ) : (
-        <Text style={styles.noDataText}>Henüz veri yok.</Text>
-      )}
-
-      <Text style={styles.chartTitle}>Son 7 Gün (Dakika)</Text>
-      <BarChart
-        data={barData}
-        width={screenWidth - 40}
-        height={220}
-        yAxisLabel=""
-        yAxisSuffix=" dk"
-        chartConfig={chartConfig}
-        verticalLabelRotation={0}
-        style={styles.chartStyle}
-      />
+      <ChartsSection pieData={pieData} barData={barData} />
       
       <View style={{ height: 50 }} /> 
     </ScrollView>
   );
 }
 
-const chartConfig = {
-  backgroundGradientFrom: "#fff",
-  backgroundGradientTo: "#fff",
-  color: (opacity = 1) => `rgba(74, 144, 226, ${opacity})`,
-  strokeWidth: 2, 
-  barPercentage: 0.5,
-  useShadowColorFromDataset: false 
-};
-
 const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: '#fff', padding: 20, paddingTop: 50 },
   headerTitle: { fontSize: 28, fontWeight: 'bold', color: '#333', marginBottom: 20 },
-  
   statsGrid: { flexDirection: 'row', flexWrap: 'wrap', justifyContent: 'space-between', marginBottom: 20 },
-  
-  card: { width: '48%', padding: 15, borderRadius: 15, alignItems: 'center', marginBottom: 15, elevation: 2 },
-  
-  cardFull: { width: '100%', padding: 15, borderRadius: 15, alignItems: 'center', marginBottom: 15, elevation: 2 },
-  
-  cardTitle: { fontSize: 14, color: '#555', marginBottom: 5, fontWeight: '600' },
-  cardValue: { fontSize: 22, fontWeight: 'bold' },
-  
-  chartTitle: { fontSize: 18, fontWeight: 'bold', color: '#333', marginTop: 10, marginBottom: 10 },
-  chartStyle: { borderRadius: 16, marginVertical: 8 },
-  noDataText: { textAlign: 'center', color: '#999', marginVertical: 20 }
 });

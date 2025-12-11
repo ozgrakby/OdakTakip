@@ -1,7 +1,6 @@
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { NavigationContainer } from '@react-navigation/native';
 
-// Oluşturduğumuz ekranları içeri alıyoruz
 import HomeScreen from './src/screens/HomeScreen';
 import ReportScreen from './src/screens/ReportScreen';
 
