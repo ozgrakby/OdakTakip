@@ -1,6 +1,6 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useEffect, useRef, useState } from 'react';
-import { Alert, AppState, StyleSheet, Text, View } from 'react-native';
+import { Alert, AppState, StyleSheet, View } from 'react-native';
 
 import AddCategoryModal from '../components/AddCategoryModal';
 import CategorySelector from '../components/CategorySelector';
@@ -33,8 +33,8 @@ export default function HomeScreen() {
     try {
       const savedCats = await AsyncStorage.getItem('custom_categories');
       if (savedCats) setCategories(JSON.parse(savedCats));
-    } catch (e) { 
-      // console.log(e);
+    } catch (error) { 
+      console.log(error);
     }
   };
 
@@ -81,7 +81,7 @@ export default function HomeScreen() {
       await AsyncStorage.setItem('focus_sessions', JSON.stringify(sessions));
       Alert.alert("Harika!", "Seans kaydedildi.");
     } catch (error) { 
-      // console.log(error);
+      console.log(error);
     }
   };
   
@@ -120,8 +120,6 @@ export default function HomeScreen() {
 
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>Odaklanma Zamanı</Text>
-
       <TimerDisplay 
         formattedTime={formatTime(timeLeft)} 
         isActive={isActive} 
@@ -171,7 +169,8 @@ export default function HomeScreen() {
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1, backgroundColor: '#F5F7FA',
+    flex: 1, 
+    backgroundColor: '#121212',
     alignItems: 'center',
     paddingTop: 60,
     paddingHorizontal: 20,
@@ -179,7 +178,7 @@ const styles = StyleSheet.create({
   title: {
     fontSize: 24,
     fontWeight: 'bold',
-    color: '#333',
+    color: '#FFFFFF',
     marginBottom: 20,
   },
 });

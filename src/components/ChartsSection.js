@@ -6,9 +6,10 @@ const screenWidth = Dimensions.get('window').width;
 const ChartsSection = ({ pieData, barData }) => {
   
   const chartConfig = {
-    backgroundGradientFrom: "#fff",
-    backgroundGradientTo: "#fff",
-    color: (opacity = 1) => `rgba(74, 144, 226, ${opacity})`,
+    backgroundGradientFrom: "#1E1E1E",
+    backgroundGradientTo: "#1E1E1E",
+    color: (opacity = 1) => `rgba(100, 181, 246, ${opacity})`,
+    labelColor: (opacity = 1) => `rgba(255, 255, 255, ${opacity})`,
     strokeWidth: 2, 
     barPercentage: 0.5,
     useShadowColorFromDataset: false 
@@ -55,17 +56,18 @@ const styles = StyleSheet.create({
   chartTitle: {
     fontSize: 18,
     fontWeight: 'bold',
-    color: '#333',
+    color: '#FFFFFF',
     marginTop: 20,
     marginBottom: 10,
   },
   chartStyle: {
     borderRadius: 16,
     marginVertical: 8,
+    backgroundColor: '#1E1E1E',
   },
   noDataText: {
     textAlign: 'center',
-    color: '#999',
+    color: '#888',
     marginVertical: 20,
     fontStyle: 'italic',
   }

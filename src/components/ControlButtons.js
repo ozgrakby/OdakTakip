@@ -3,14 +3,12 @@ import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 const ControlButtons = ({ isActive, onStartStop, onReset }) => {
   return (
     <View style={styles.controlsContainer}>
-      {/* Ana Buton (Başlat/Duraklat) */}
       <TouchableOpacity style={styles.mainButton} onPress={onStartStop}>
         <Text style={styles.mainButtonText}>
           {isActive ? 'DURAKLAT' : 'BAŞLAT'}
         </Text>
       </TouchableOpacity>
 
-      {/* Sıfırla Butonu */}
       <TouchableOpacity style={styles.resetButton} onPress={onReset}>
         <Text style={styles.resetButtonText}>SIFIRLA</Text>
       </TouchableOpacity>
@@ -24,7 +22,7 @@ const styles = StyleSheet.create({
     width: '100%',
     justifyContent: 'space-around',
     alignItems: 'center',
-    marginTop: 20, // Biraz boşluk
+    marginTop: 20,
   },
   mainButton: {
     backgroundColor: '#4A90E2',
@@ -44,7 +42,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 20,
   },
   resetButtonText: {
-    color: '#E74C3C', // Kırmızı
+    color: '#EF5350',
     fontSize: 16,
     fontWeight: 'bold',
   },

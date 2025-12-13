@@ -14,19 +14,21 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     marginBottom: 30,
-    backgroundColor: '#FFE0B2',
+    backgroundColor: '#3E2723',
     padding: 10,
     borderRadius: 10,
+    borderWidth: 1,
+    borderColor: '#E65100',
   },
   statsTitle: {
     fontSize: 16,
-    color: '#E65100',
+    color: '#FFCC80',
     marginRight: 10,
   },
   statsCount: {
     fontSize: 18,
     fontWeight: 'bold',
-    color: '#E65100',
+    color: '#FFB74D',
   },
 });
 

@@ -1,50 +1,90 @@
-# Welcome to your Expo app 👋
+# OdakTakip (Odaklanma Takibi ve Raporlama Uygulaması)
 
-This is an [Expo](https://expo.dev) project created with [`create-expo-app`](https://www.npmjs.com/package/create-expo-app).
+Bu proje, Sakarya Üniversitesi Bilgisayar Mühendisliği Bölümü **BSM 447 - Mobil Uygulama Geliştirme** dersi dönem ödevi kapsamında geliştirilmiştir.
 
-## Get started
+## Projenin Amacı
+Kullanıcının belirlediği süre boyunca telefondan uzak durmasını sağlar, uygulamadan çıkışları (dikkat dağınıklığını) tespit eder ve bu odaklanma seansları hakkında detaylı raporlar sunar.
 
-1. Install dependencies
+##  Özellikler
 
-   ```bash
-   npm install
-   ```
+### 1. Odaklanma Yönetimi
+* **Ayarlanabilir Sayaç:** Kullanıcı (+) ve (-) butonlarıyla istediği dakikayı ayarlayabilir.
+* **Kategori Sistemi:** Varsayılan kategorilerin yanı sıra, kullanıcı **kendi özel kategorisini** ekleyebilir.
 
-2. Start the app
+### 2. Uygulama Durum Yönetimi
+* **Dikkat Dağınıklığı Algılama:** Kullanıcı odaklanma sırasındayken uygulamayı arka plana atarsa (Farklı bir uygulamaya geçmek, ana ekrana dönmek vb.), uygulama bunu anında tespit eder. Dikkat dağınıklığı durumunda sayaç durur. Dikkat dağınıklıklarının sayısı raporlara işlenir.
 
-   ```bash
-   npx expo start
-   ```
+### 3. Veri Kaydı ve Raporlama
+* **Kalıcı Hafıza:** Tamamlanan tüm seanslar ve kullanıcının eklediği özel kategoriler telefon hafızasında saklanır. Uygulama kapatılıp açılsa bile veriler kaybolmaz.
+* **Grafiksel Analiz:**
+    * Hangi kategoride ne kadar çalışıldığını gösterir.
+    *  Son 7 günün çalışma performansını dakika bazında gösterir.
+    *  Toplam süre, günlük süre, seans sayısı ve ortalama odaklanma süresi gibi metrikler sunulur.
 
-In the output, you'll find options to open the app in a
+## Kullanılan Teknolojiler ve Kütüphaneler
 
-- [development build](https://docs.expo.dev/develop/development-builds/introduction/)
-- [Android emulator](https://docs.expo.dev/workflow/android-studio-emulator/)
-- [iOS simulator](https://docs.expo.dev/workflow/ios-simulator/)
-- [Expo Go](https://expo.dev/go), a limited sandbox for trying out app development with Expo
+Proje **React Native (Expo)** altyapısı ile geliştirilmiştir.
 
-You can start developing by editing the files inside the **app** directory. This project uses [file-based routing](https://docs.expo.dev/router/introduction).
+| Modül | Amaç |
+|-----------|------|
+| **React Native** | Ana geliştirme iskeleti |
+| **React Navigation** | Sayfalar arası geçiş ve Alt Menü (Bottom Tabs) yönetimi |
+| **AsyncStorage** | Verilerin yerel cihazda kalıcı olarak saklanması |
+| **AppState** | Uygulamanın arka plana atılıp atılmadığının takibi |
+| **React Native Chart Kit** | Rapor ekranındaki grafiklerin çizilmesi |
+| **Expo Vector Icons** | Uygulama içi ikonlar |
 
-## Get a fresh project
+## Proje Yapısı
 
-When you're ready, run:
-
-```bash
-npm run reset-project
+```text
+src/
+├── components/          # Yeniden kullanılabilir UI parçaları
+│   ├── AddCategoryModal.js  # Kategori ekleme penceresi
+│   ├── CategorySelector.js  # Kategori listesi ve seçim mantığı
+│   ├── ChartsSection.js     # Grafiklerin çizildiği alan
+│   ├── ControlButtons.js    # Başlat/Durdur/Sıfırla butonları
+│   ├── DistractionBadge.js  # İhlal sayacı göstergesi
+│   ├── StatCard.js          # Rapor ekranındaki bilgi kartları
+│   ├── TimePickerModal.js   # Süre ayarlama penceresi
+│   └── TimerDisplay.js      # Ana sayaç görünümü
+├── screens/             # Ana ekranlar
+│   ├── HomeScreen.js        # Odaklanma ve sayaç ekranı
+│   └── ReportScreen.js      # İstatistik ve grafik ekranı
+└── App.js               # Navigasyon ve Tema ayarları
 ```
 
-This command will move the starter code to the **app-example** directory and create a blank **app** directory where you can start developing.
+## Kurulum ve Çalıştırma
 
-## Learn more
+1.  **Projeyi Klonlayın:**
+    ```bash
+    git clone https://github.com/ozgrakby/OdakTakip.git
+    cd OdakTakip
+    ```
 
-To learn more about developing your project with Expo, look at the following resources:
+2.  **Bağımlılıkları Yükleyin:**
+    ```bash
+    npm install
+    ```
 
-- [Expo documentation](https://docs.expo.dev/): Learn fundamentals, or go into advanced topics with our [guides](https://docs.expo.dev/guides).
-- [Learn Expo tutorial](https://docs.expo.dev/tutorial/introduction/): Follow a step-by-step tutorial where you'll create a project that runs on Android, iOS, and the web.
+3.  **Uygulamayı Başlatın:**
+    ```bash
+    npx expo start -c
+    ```
+    *Not: `-c` parametresi önbelleği temizleyerek başlatır, olası hataları önler.*
 
-## Join the community
+4.  **Test Edin:**
+    * Expo Go uygulaması ile QR kodu okutarak telefonunuzda test edebilirsiniz.
+    * Android Emulator veya iOS Simulator üzerinde çalıştırabilirsiniz.
 
-Join our community of developers creating universal apps.
+## Ekran Görüntüleri
+<p align="center">
+  <img src="assets/images/anasayfa.png" width="250" title="Ana Sayfa">
+  &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;
+  <img src="assets/images/raporlar.png" width="250" title="Raporlar"> 
+</p>
 
-- [Expo on GitHub](https://github.com/expo/expo): View our open source platform and contribute.
-- [Discord community](https://chat.expo.dev): Chat with Expo users and ask questions.
+## Hazırlayan
+
+* **Ad Soyad:** Özgür Akbay
+* **Öğrenci No:** G221210005
+* **Ders:** BSM 447 - Mobil Uygulama Geliştirme

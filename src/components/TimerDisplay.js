@@ -15,7 +15,7 @@ const TimerDisplay = ({ formattedTime, isActive, onPress }) => {
 
 const styles = StyleSheet.create({
   timerContainer: {
-    backgroundColor: '#fff',
+    backgroundColor: '#1E1E1E',
     width: 250,
     height: 250,
     borderRadius: 125,
@@ -26,9 +26,9 @@ const styles = StyleSheet.create({
     marginBottom: 20,
     elevation: 5,
     shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.2,
-    shadowRadius: 4,
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.5,
+    shadowRadius: 6,
   },
   timerText: {
     fontSize: 60,
@@ -37,7 +37,7 @@ const styles = StyleSheet.create({
   },
   statusText: {
     fontSize: 12,
-    color: '#888',
+    color: '#B0B0B0',
     marginTop: 10,
   },
 });

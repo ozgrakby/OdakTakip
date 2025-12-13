@@ -1,7 +1,7 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useFocusEffect } from '@react-navigation/native';
 import { useCallback, useState } from 'react';
-import { ScrollView, StyleSheet, Text, View } from 'react-native';
+import { ScrollView, StyleSheet, View } from 'react-native';
 
 import ChartsSection from '../components/ChartsSection';
 import StatCard from '../components/StatCard';
@@ -103,14 +103,12 @@ export default function ReportScreen() {
 
   return (
     <ScrollView style={styles.container}>
-      <Text style={styles.headerTitle}>Raporlar</Text>
-
       <View style={styles.statsGrid}>
-        <StatCard title="Bugün" value={`${stats.todayTime} dk`} color="#1E88E5" backgroundColor="#E3F2FD" />
-        <StatCard title="Toplam" value={`${stats.totalTime} dk`} color="#43A047" backgroundColor="#E8F5E9" />
-        <StatCard title="Seans Sayısı" value={stats.sessionCount} color="#FB8C00" backgroundColor="#FFF3E0" />
-        <StatCard title="Dikkat Dağılması" value={stats.totalDistractions} color="#E53935" backgroundColor="#FFEBEE" />
-        <StatCard title="Ortalama Süre" value={`${stats.averageTime} dk`} color="#8E24AA" backgroundColor="#F3E5F5" isFullWidth={true} />
+        <StatCard title="Bugün" value={`${stats.todayTime} dk`} color="#64B5F6" backgroundColor="#1E1E1E" />
+        <StatCard title="Toplam" value={`${stats.totalTime} dk`} color="#81C784" backgroundColor="#1E1E1E" />
+        <StatCard title="Seans Sayısı" value={stats.sessionCount} color="#FFB74D" backgroundColor="#1E1E1E" />
+        <StatCard title="Dikkat Dağılması" value={stats.totalDistractions} color="#EF5350" backgroundColor="#1E1E1E" />
+        <StatCard title="Ortalama Süre" value={`${stats.averageTime} dk`} color="#BA68C8" backgroundColor="#1E1E1E" isFullWidth={true} />
       </View>
 
       <ChartsSection pieData={pieData} barData={barData} />
@@ -121,7 +119,22 @@ export default function ReportScreen() {
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: '#fff', padding: 20, paddingTop: 50 },
-  headerTitle: { fontSize: 28, fontWeight: 'bold', color: '#333', marginBottom: 20 },
-  statsGrid: { flexDirection: 'row', flexWrap: 'wrap', justifyContent: 'space-between', marginBottom: 20 },
+  container: { 
+    flex: 1, 
+    backgroundColor: '#121212',
+    padding: 20, 
+    paddingTop: 50 
+  },
+  headerTitle: { 
+    fontSize: 28, 
+    fontWeight: 'bold', 
+    color: '#FFFFFF',
+    marginBottom: 20 
+  },
+  statsGrid: { 
+    flexDirection: 'row', 
+    flexWrap: 'wrap', 
+    justifyContent: 'space-between', 
+    marginBottom: 20 
+  },
 });

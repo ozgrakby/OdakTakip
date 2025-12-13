@@ -43,7 +43,7 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontWeight: '600',
     marginBottom: 10,
-    color: '#555',
+    color: '#B0B0B0',
   },
   scrollContainer: {
     flexDirection: 'row',
@@ -51,18 +51,18 @@ const styles = StyleSheet.create({
   categoryButton: {
     paddingVertical: 10,
     paddingHorizontal: 20,
-    backgroundColor: '#fff',
+    backgroundColor: '#1E1E1E',
     borderRadius: 20,
     marginRight: 10,
     borderWidth: 1,
-    borderColor: '#ddd',
+    borderColor: '#333',
   },
   categoryButtonSelected: {
     backgroundColor: '#4A90E2',
     borderColor: '#4A90E2',
   },
   categoryText: {
-    color: '#555',
+    color: '#E0E0E0',
   },
   categoryTextSelected: {
     color: '#fff',
@@ -71,6 +71,7 @@ const styles = StyleSheet.create({
   addButton: {
     borderColor: '#4A90E2',
     borderStyle: 'dashed',
+    backgroundColor: 'transparent'
   },
   addButtonText: {
     color: '#4A90E2',

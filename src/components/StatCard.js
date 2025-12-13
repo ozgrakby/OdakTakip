@@ -23,14 +23,17 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     marginBottom: 15,
     elevation: 2,
+    borderWidth: 1,
+    borderColor: '#333', // İnce çerçeve
+    // Shadow ayarları koyu temada çok görünmez ama durabilir
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
+    shadowOpacity: 0.3,
     shadowRadius: 4,
   },
   cardTitle: {
     fontSize: 14,
-    color: '#555',
+    color: '#B0B0B0', // Açık Gri Başlık
     marginBottom: 5,
     fontWeight: '600',
     textAlign: 'center'
